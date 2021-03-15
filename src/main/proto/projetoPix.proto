@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.github.andreyfillipe";
+option java_outer_classname = "ProjetoPix";
+option objc_class_prefix = "HLW";
+
+package io.github.andreyfillipe;
+
+service ProjetoPixService {
+  rpc send (ProjetoPixRequest) returns (ProjetoPixReply) {}
+}
+
+message ProjetoPixRequest {
+  string name = 1;
+}
+
+message ProjetoPixReply {
+  string message = 1;
+}
