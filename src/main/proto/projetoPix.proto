@@ -7,14 +7,46 @@ option objc_class_prefix = "HLW";
 
 package io.github.andreyfillipe;
 
-service ProjetoPixService {
-  rpc send (ProjetoPixRequest) returns (ProjetoPixReply) {}
+service KeymanagerCadastrarGrpcService {
+  rpc cadastrar (CadastrarPixRequest) returns (CadastrarPixResponse) {}
 }
 
-message ProjetoPixRequest {
-  string name = 1;
+service KeymanagerExcluirGrpcService {
+  rpc excluir (ExcluirPixRequest) returns (ExcluirPixResponse) {}
 }
 
-message ProjetoPixReply {
-  string message = 1;
+enum TipoChave {
+  CHAVE_DESCONHECIDA = 0;
+  CPF = 1;
+  CELULAR = 2;
+  EMAIL = 3;
+  CHAVE_ALEATORIA = 4;
+}
+
+enum TipoConta {
+  CONTA_DESCONHECIDA = 0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
+}
+
+message CadastrarPixRequest {
+  string clienteId = 1;
+  TipoChave tipoChave = 2;
+  string valorChave = 3;
+  TipoConta tipoConta = 4;
+}
+
+message CadastrarPixResponse {
+  string clienteId = 1;
+  string pixId = 2;
+}
+
+message ExcluirPixRequest {
+  string pixId = 1;
+  string clienteId = 2;
+}
+
+message ExcluirPixResponse {
+  string pixId = 1;
+  string clienteId = 2;
 }

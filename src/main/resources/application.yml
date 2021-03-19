@@ -1,3 +1,23 @@
 micronaut:
   application:
     name: projetoPix
+
+datasources:
+  default:
+    url: jdbc:mysql://localhost:3307/transacao_pix?serverTimezone=UTC
+    username: root
+    password: root
+
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+
+itau:
+  url: http://localhost:9091
+
+banco:
+  central:
+    url: http://localhost:8082
