@@ -9,6 +9,8 @@ import java.util.*
 interface PixRepository : JpaRepository<Pix, Long> {
 
     @Query("select case when count(p) > 0 then true else false end from Pix p where p.valorChave = :valorChave")
-    fun existsByValorChave(valorChave: String?): Boolean
-    fun findByIdAndClienteId(id: UUID?, clienteId: UUID?): Optional<Pix>
+    fun existsByValorChave(valorChave: String): Boolean
+    fun findByValorChave(valorChave: String): Optional<Pix>
+    fun findByIdAndClienteId(id: UUID, clienteId: UUID): Optional<Pix>
+    fun findAllByClienteId(clienteId: UUID): List<Pix>
 }

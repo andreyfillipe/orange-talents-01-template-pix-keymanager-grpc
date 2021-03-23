@@ -17,10 +17,10 @@ interface BancoCentralClient {
     @Delete("/api/v1/pix/keys/{key}")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    fun deletarChavePix(@Parameter key: String, @Body request: DeletarChavePixBcbRequest) : HttpResponse<DeletarChavePixBcbResponse>
+    fun excluirChavePix(@Parameter key: String, @Body request: DeletarChavePixBcbRequest) : HttpResponse<DeletarChavePixBcbResponse>
 
     @Get("/api/v1/pix/keys/{key}")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    fun buscarChavePix(@Parameter key: String) : HttpResponse<CadastrarChavePixBcbResponse>
+    fun consultarChavePix(@Parameter key: String) : HttpResponse<CadastrarChavePixBcbResponse>
 }

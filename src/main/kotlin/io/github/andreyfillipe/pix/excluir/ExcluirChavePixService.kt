@@ -27,8 +27,8 @@ class ExcluirChavePixService(
 
         pixRepository.delete(pix)
 
-        val request = DeletarChavePixBcbRequest(pix.valorChave, pix.conta.isbp())
-        val bancoCentralResponse = bancoCentralClient.deletarChavePix(key = pix.valorChave, request = request)
+        val deletarChavePixBcbRequest = DeletarChavePixBcbRequest(pix.valorChave, pix.conta.isbp())
+        val bancoCentralResponse = bancoCentralClient.excluirChavePix(key = pix.valorChave, request = deletarChavePixBcbRequest)
         if (bancoCentralResponse.status != HttpStatus.OK) {
             throw ApiErroException(Status.INTERNAL, "Erro ao deletar chave Pix no Banco Central do Brasil")
         }

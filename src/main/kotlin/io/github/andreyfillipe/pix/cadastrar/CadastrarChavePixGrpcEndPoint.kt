@@ -2,7 +2,7 @@ package io.github.andreyfillipe.pix.cadastrar
 
 import io.github.andreyfillipe.CadastrarPixRequest
 import io.github.andreyfillipe.CadastrarPixResponse
-import io.github.andreyfillipe.KeymanagerCadastrarGrpcServiceGrpc
+import io.github.andreyfillipe.KeyManagerCadastrarGrpcServiceGrpc
 import io.github.andreyfillipe.pix.Pix
 import io.github.andreyfillipe.pix.toNovaChavePixRequest
 import io.github.andreyfillipe.validacao.ErrorHandler
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class CadastrarChavePixGrpcEndPoint(
     private val cadastrarChavePixService: CadastrarChavePixService
-) : KeymanagerCadastrarGrpcServiceGrpc.KeymanagerCadastrarGrpcServiceImplBase() {
+) : KeyManagerCadastrarGrpcServiceGrpc.KeyManagerCadastrarGrpcServiceImplBase() {
 
     override fun cadastrar(request: CadastrarPixRequest?,
                            responseObserver: StreamObserver<CadastrarPixResponse>?) {

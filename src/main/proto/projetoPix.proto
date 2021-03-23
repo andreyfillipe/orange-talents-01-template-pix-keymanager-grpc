@@ -7,12 +7,22 @@ option objc_class_prefix = "HLW";
 
 package io.github.andreyfillipe;
 
-service KeymanagerCadastrarGrpcService {
+import "google/protobuf/timestamp.proto";
+
+service KeyManagerCadastrarGrpcService {
   rpc cadastrar (CadastrarPixRequest) returns (CadastrarPixResponse) {}
 }
 
-service KeymanagerExcluirGrpcService {
+service KeyManagerExcluirGrpcService {
   rpc excluir (ExcluirPixRequest) returns (ExcluirPixResponse) {}
+}
+
+service KeyManagerConsultarGrpcService {
+  rpc consultar (ConsultarPixRequest) returns (ConsultarPixResponse) {}
+}
+
+service KeyManagerListarGrpcService {
+  rpc Listar (ListarPixRequest) returns (ListarPixResponse) {}
 }
 
 enum TipoChave {
@@ -49,4 +59,53 @@ message ExcluirPixRequest {
 message ExcluirPixResponse {
   string pixId = 1;
   string clienteId = 2;
+}
+
+message ConsultarPixRequest {
+  message FiltroPorPixId {
+    string pixId = 1;
+    string clienteId = 2;
+  }
+
+  oneof filtro {
+    FiltroPorPixId pixId = 1;
+    string valorChave = 2;
+  }
+}
+
+message ConsultarPixResponse {
+  message ChavePix {
+
+    message Conta {
+      string instituicao = 1;
+      string nomeTitular = 2;
+      string cpfTitular = 3;
+      string agencia = 4;
+      string numeroConta = 5;
+      TipoConta tipoConta = 6;
+    }
+    TipoChave tipoChave = 1;
+    string valorChave = 2;
+    Conta conta = 3;
+    google.protobuf.Timestamp criadoEm = 4;
+  }
+  string pixId = 1;
+  string clienteId = 2;
+  ChavePix chave = 3;
+}
+
+message ListarPixRequest {
+  string clienteId = 1;
+}
+
+message ListarPixResponse {
+  message ChavePix {
+    string pixId = 1;
+    TipoChave tipoChave = 2;
+    string valorChave = 3;
+    TipoConta tipoConta = 4;
+    google.protobuf.Timestamp criadoEm = 5;
+  }
+  string clienteId = 1;
+  repeated ChavePix chavePix = 2;
 }

@@ -2,7 +2,7 @@ package io.github.andreyfillipe.pix.excluir
 
 import io.github.andreyfillipe.ExcluirPixRequest
 import io.github.andreyfillipe.ExcluirPixResponse
-import io.github.andreyfillipe.KeymanagerExcluirGrpcServiceGrpc
+import io.github.andreyfillipe.KeyManagerExcluirGrpcServiceGrpc
 import io.github.andreyfillipe.pix.toExcluirChavePixRequest
 import io.github.andreyfillipe.validacao.ErrorHandler
 import io.grpc.stub.StreamObserver
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class ExcluirChavePixGrpcEndPoint(
     private val excluirChavePixService: ExcluirChavePixService
-) : KeymanagerExcluirGrpcServiceGrpc.KeymanagerExcluirGrpcServiceImplBase() {
+) : KeyManagerExcluirGrpcServiceGrpc.KeyManagerExcluirGrpcServiceImplBase() {
 
     override fun excluir(request: ExcluirPixRequest?,
                          responseObserver: StreamObserver<ExcluirPixResponse>?) {

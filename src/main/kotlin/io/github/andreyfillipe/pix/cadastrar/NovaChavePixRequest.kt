@@ -19,19 +19,19 @@ data class NovaChavePixRequest(
     @field:NotBlank
     val clienteId: String?,
     @field:NotNull
-    val tipoChave: TipoChaveRequest?,
+    val tipoChave: TipoChave?,
     @field:NotBlank
     @field:Size(max = 77)
     val valorChave: String?,
     @field:NotNull
-    val tipoConta: TipoContaRequest?
+    val tipoConta: TipoConta?
 ) {
 
     fun toPix(conta: Conta): Pix =
         Pix(
             clienteId = UUID.fromString(this.clienteId),
             tipoChave = TipoChave.valueOf(this.tipoChave!!.name),
-            valorChave = if (this.tipoChave == TipoChaveRequest.CHAVE_ALEATORIA) UUID.randomUUID().toString() else this.valorChave!!,
+            valorChave = if (this.tipoChave == TipoChave.CHAVE_ALEATORIA) UUID.randomUUID().toString() else this.valorChave!!,
             tipoConta = TipoConta.valueOf(this.tipoConta!!.name),
             conta = conta
         )

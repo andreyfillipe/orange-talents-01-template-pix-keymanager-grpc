@@ -22,7 +22,7 @@ class CadastrarChavePixService(
 
     @Transactional
     fun cadastrar(@Valid request: NovaChavePixRequest): Pix {
-        if (this.pixRepository.existsByValorChave(request.valorChave)) {
+        if (this.pixRepository.existsByValorChave(request.valorChave!!)) {
             throw ApiErroException(Status.ALREADY_EXISTS, "Chave Pix: ${request.valorChave} já existe")
         }
 
