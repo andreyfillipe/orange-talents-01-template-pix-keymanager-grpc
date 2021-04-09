@@ -6,7 +6,7 @@ import io.micronaut.data.jpa.repository.JpaRepository
 import java.util.*
 
 @Repository
-interface PixRepository : JpaRepository<Pix, Long> {
+interface PixRepository : JpaRepository<Pix, UUID> {
 
     @Query("select case when count(p) > 0 then true else false end from Pix p where p.valorChave = :valorChave")
     fun existsByValorChave(valorChave: String): Boolean

@@ -8,6 +8,7 @@ import io.github.andreyfillipe.validacao.handlers.ApiErroException
 import io.grpc.Status
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
+import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
 import javax.validation.Valid
@@ -19,7 +20,6 @@ class CadastrarChavePixService(
     private val itauClient: ItauClient,
     private val bancoCentralClient: BancoCentralClient
 ) {
-
     @Transactional
     fun cadastrar(@Valid request: NovaChavePixRequest): Pix {
         if (this.pixRepository.existsByValorChave(request.valorChave!!)) {
@@ -35,7 +35,7 @@ class CadastrarChavePixService(
         val bcbRequest = pix.toCadastrarChavePixBcbRequest()
         val bcbResponse = bancoCentralClient.cadastrarChavePix(bcbRequest)
         if (bcbResponse.status != HttpStatus.CREATED) {
-            throw ApiErroException(Status.INTERNAL ,"Erro ao cadastrar chave Pix no Banco Central do Brasil")
+            throw ApiErroException(Status.INTERNAL, "Erro ao cadastrar chave Pix no Banco Central do Brasil")
         }
         pix.valorChave = bcbResponse.body().key
 
