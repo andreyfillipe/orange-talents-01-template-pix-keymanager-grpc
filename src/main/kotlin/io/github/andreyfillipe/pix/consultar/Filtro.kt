@@ -49,7 +49,7 @@ sealed class Filtro {
     @Introspected
     class Invalido() : Filtro() {
         override fun filtra(pixRepository: PixRepository, bancoCentralClient: BancoCentralClient): ConsultarChavePixResponse {
-            throw ApiErroException(Status.NOT_FOUND, "Chave Pix inválida ou não informada não encontrada")
+            throw ApiErroException(Status.NOT_FOUND, "Chave Pix inválida ou não informada")
         }
     }
 }

@@ -22,5 +22,5 @@ interface BancoCentralClient {
     @Get("/api/v1/pix/keys/{key}")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    fun consultarChavePix(@Parameter key: String) : HttpResponse<CadastrarChavePixBcbResponse>
+    fun consultarChavePix(@Parameter key: String) : HttpResponse<ConsultarChavePixBcbResponse>
 }

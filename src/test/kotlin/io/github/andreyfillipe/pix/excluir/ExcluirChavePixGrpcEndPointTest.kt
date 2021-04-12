@@ -4,11 +4,9 @@ import com.google.rpc.BadRequest
 import io.github.andreyfillipe.ExcluirPixRequest
 import io.github.andreyfillipe.KeyManagerExcluirGrpcServiceGrpc
 import io.github.andreyfillipe.pix.*
-import io.github.andreyfillipe.sistema_externo.banco_central.BancoCentralClient
-import io.github.andreyfillipe.sistema_externo.banco_central.DeletarChavePixBcbRequest
-import io.github.andreyfillipe.sistema_externo.banco_central.DeletarChavePixBcbResponse
-import io.github.andreyfillipe.sistema_externo.itau.ItauClient
+import io.github.andreyfillipe.sistema_externo.banco_central.*
 import io.grpc.ManagedChannel
+import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.grpc.protobuf.StatusProto
 import io.micronaut.context.annotation.Factory
@@ -17,9 +15,12 @@ import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import org.hamcrest.MatcherAssert
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import java.time.LocalDateTime
 import java.util.*
@@ -31,14 +32,6 @@ internal class ExcluirChavePixGrpcEndPointTest(
     private val pixRepository: PixRepository,
     private val grpcClient: KeyManagerExcluirGrpcServiceGrpc.KeyManagerExcluirGrpcServiceBlockingStub
 ) {
-
-    @MockBean(ItauClient::class)
-    fun itauClient(): ItauClient? {
-        return Mockito.mock(ItauClient::class.java)
-    }
-
-    @Inject
-    lateinit var itauClient: ItauClient
 
     @MockBean(BancoCentralClient::class)
     fun bancoCentralClient(): BancoCentralClient? {
@@ -100,8 +93,93 @@ internal class ExcluirChavePixGrpcEndPointTest(
     }
 
     @Test
-    fun `Não deve excluir chave pix quando pix não pertencer a clienteId`() {
+    fun `Nao deve excluir chave pix quando pix nao pertencer a clienteId`() {
+        //cenario
+        val pixId = UUID.randomUUID().toString()
+        val pix = Pix(
+            clienteId = CLIENTE_ID,
+            tipoChave = TipoChave.CPF,
+            valorChave = "12345678909",
+            tipoConta = TipoConta.CONTA_CORRENTE,
+            conta = Conta(
+                instituicao = "60701190",
+                nomeTitular = "Nome do Titular",
+                cpfTitular = "12345678909",
+                agencia = "0001",
+                numeroConta = "123456"
+            )
+        )
+        pixRepository.save(pix)
 
+        //acao
+        val error = assertThrows<StatusRuntimeException> {
+            grpcClient.excluir(ExcluirPixRequest.newBuilder()
+                .setPixId(pixId)
+                .setClienteId(CLIENTE_ID.toString())
+                .build())
+        }
+
+        //validacao
+        assertEquals(Status.INVALID_ARGUMENT.code, error.status.code)
+        assertEquals("Chave Pix: ${pixId} não encontrada ou não pertence ao Cliente ID: ${CLIENTE_ID.toString()}", error.status.description)
+        assertTrue(pixRepository.findAll().count() == 1)
+    }
+
+    @Test
+    fun `Nao deve excluir chave pix quando ocorrer erro no Banco Central`() {
+        //cenario
+        val pix = Pix(
+            clienteId = CLIENTE_ID,
+            tipoChave = TipoChave.CPF,
+            valorChave = "12345678909",
+            tipoConta = TipoConta.CONTA_CORRENTE,
+            conta = Conta(
+                instituicao = "60701190",
+                nomeTitular = "Nome do Titular",
+                cpfTitular = "12345678909",
+                agencia = "0001",
+                numeroConta = "123456"
+            )
+        )
+        pixRepository.save(pix)
+
+        Mockito.`when`(bancoCentralClient.excluirChavePix(
+            key = "12345678909",
+            request = DeletarChavePixBcbRequest(
+                key = "12345678909",
+                participant = "60701190")
+        ))
+            .thenReturn(HttpResponse.badRequest())
+
+        //acao
+        val error = assertThrows<StatusRuntimeException> {
+            grpcClient.excluir(ExcluirPixRequest.newBuilder()
+                .setPixId(pix.id.toString())
+                .setClienteId(CLIENTE_ID.toString())
+                .build())
+        }
+
+        //validacao
+        assertEquals(Status.INVALID_ARGUMENT.code, error.status.code)
+        assertEquals("Erro ao deletar chave Pix no Banco Central do Brasil", error.status.description)
+        assertTrue(pixRepository.findAll().count() == 1)
+    }
+
+    @Test
+    fun `Nao deve excluir chave pix quando parametros de entrada forem invalidos`() {
+        //acao
+        val error = assertThrows<StatusRuntimeException> {
+            grpcClient.excluir(ExcluirPixRequest.newBuilder().build())
+        }
+
+        //validacao
+        assertEquals(Status.INVALID_ARGUMENT.code, error.status.code)
+        assertEquals("request with invalid parameters", error.status.description)
+        MatcherAssert.assertThat(error.violations(), Matchers.containsInAnyOrder(
+            //Pair("pixId", "must not be null"),
+            //Pair("request", "Chave Pix inválida"),
+            Pair("clienteId", "must not be blank")
+        ))
     }
 
     @Factory
